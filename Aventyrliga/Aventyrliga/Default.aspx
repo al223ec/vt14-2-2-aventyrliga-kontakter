@@ -14,7 +14,7 @@
             <p class="heading">2-2 - Kontakter</p>
             <h1>Äventyrliga kontakter </h1>
             <%-- Validering --%>
-            <asp:ValidationSummary ID="ValidationSummary1" runat="server" />
+            <asp:ValidationSummary ID="ValidationSummary" CssClass="error" runat="server" />
             <asp:ListView ID="ContactListView" runat="server" ItemType="Aventyrliga.Model.Contact" SelectMethod="ContactListView_GetData"
                 InsertMethod="ContactListView_InsertItem" UpdateMethod="ContactListView_UpdateItem" DeleteMethod="ContactListView_DeleteItem"
                 DataKeyNames="contactID" InsertItemPosition="FirstItem">
@@ -33,6 +33,15 @@
                         <%-- Platshållare för nya rader --%>
                         <asp:PlaceHolder ID="itemPlaceholder" runat="server" />
                     </table>
+                    <asp:DataPager ID="DataPager" runat="server" >
+                        <Fields>
+                            <asp:NextPreviousPagerField ShowFirstPageButton="True" FirstPageText=" << "
+                                ShowNextPageButton="False" ShowPreviousPageButton="False" />
+                            <asp:NumericPagerField />
+                            <asp:NextPreviousPagerField ShowLastPageButton="True" LastPageText=" >> "
+                                ShowNextPageButton="False" ShowPreviousPageButton="False" />
+                        </Fields>
+                    </asp:DataPager>
                 </LayoutTemplate>
                 <ItemTemplate>
                     <%-- Mall för nya rader. --%>
@@ -48,7 +57,8 @@
                         </td>
                         <td>
                             <%-- "Commandknappar" --%>
-                            <asp:LinkButton runat="server" CommandName="Delete" Text="Ta bort" CausesValidation="false" />
+                            <asp:LinkButton runat="server" CommandName="Delete" Text="Ta bort" CausesValidation="false" 
+                                OnClientClick='<%# String.Format("return confirm(\"Är du säker att du vill ta bort {0} {1} {2}?\")", Item.FirstName, Item.LastName, Item.EmailAddress) %>' />
                             <asp:LinkButton runat="server" CommandName="Edit" Text="Redigera" CausesValidation="false" />
                         </td>
                     </tr>
@@ -66,13 +76,13 @@
                     <%-- Mall för rad i tabellen för att lägga till nya kunduppgifter.--%>
                     <tr>
                         <td>
-                            <asp:TextBox ID="Name" runat="server" Text='<%# BindItem.FirstName %>' />
+                            <asp:TextBox ID="Name" runat="server" MaxLength="50" Text='<%# BindItem.FirstName %>' />
                         </td>
                         <td>
-                            <asp:TextBox ID="Address" runat="server" Text='<%# BindItem.LastName %>' />
+                            <asp:TextBox ID="Address" runat="server" MaxLength="50" Text='<%# BindItem.LastName %>' />
                         </td>
                         <td>
-                            <asp:TextBox ID="PostalCode" runat="server" Text='<%# BindItem.EmailAddress %>' />
+                            <asp:TextBox ID="PostalCode" runat="server" MaxLength="50" Text='<%# BindItem.EmailAddress %>' />
                         </td>
                         <td>
                             <%-- "Commandknappar" --%>
