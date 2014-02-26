@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aventyrliga.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,6 +10,9 @@ namespace Aventyrliga
 {
     public partial class Default : System.Web.UI.Page
     {
+        private Service _service;
+        private Service Service { get { return _service ?? (_service = new Service()); } }
+
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -20,45 +24,37 @@ namespace Aventyrliga
         //     int startRowIndex
         //     out int totalRowCount
         //     string sortByExpression
-        public IQueryable<Aventyrliga.Model.Contact> ContactListView_GetData()
+        public IEnumerable<Contact> ContactListView_GetData()
         {
-            return null;
+            return Service.GetContacts(); 
         }
 
-        public void ContactListView_InsertItem()
+        public void ContactListView_InsertItem(Contact contact)
         {
-            var item = new Aventyrliga.Model.Contact();
-            TryUpdateModel(item);
-            if (ModelState.IsValid)
-            {
-                // Save changes here
-
-            }
+            Service.SaveContact(contact);
         }
 
         // The id parameter name should match the DataKeyNames value set on the control
-        public void ContactListView_UpdateItem(int id)
+        public void ContactListView_UpdateItem(int contactID)
         {
-            Aventyrliga.Model.Contact item = null;
-            // Load the item here, e.g. item = MyDataLayer.Find(id);
-            if (item == null)
+            var contact = Service.GetContact(contactID);
+
+            if (contact == null)
             {
                 // The item wasn't found
-                ModelState.AddModelError("", String.Format("Item with id {0} was not found", id));
+                ModelState.AddModelError("", String.Format("Item with id {0} was not found", contactID));
                 return;
             }
-            TryUpdateModel(item);
-            if (ModelState.IsValid)
+            if (TryUpdateModel(contact) && ModelState.IsValid)
             {
-                // Save changes here, e.g. MyDataLayer.SaveChanges();
-
+                Service.SaveContact(contact);
             }
         }
 
         // The id parameter name should match the DataKeyNames value set on the control
-        public void ContactListView_DeleteItem(int id)
+        public void ContactListView_DeleteItem(int contactID)
         {
-
+            Service.DeleteContact(contactID);
         }
     }
 }
