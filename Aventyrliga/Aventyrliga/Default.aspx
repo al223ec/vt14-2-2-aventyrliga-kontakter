@@ -13,6 +13,16 @@
             <%-- Header --%>
             <p class="heading">2-2 - Kontakter</p>
             <h1>Äventyrliga kontakter </h1>
+            <asp:Panel ID="OutputPanel" runat="server" Visible="false" CssClass="success">
+                <h4>
+                    <asp:Literal ID="HeaderOutputLiteral" runat="server" /></h4>
+                <p>
+                    <asp:Literal ID="OutputLiteral" runat="server" />
+                </p>
+                <p>
+                    <asp:Button ID="Button" runat="server" Text="Stäng" CausesValidation="false" />
+                </p>
+            </asp:Panel>
             <%-- Validering --%>
             <asp:ValidationSummary ID="ValidationSummary" CssClass="error" runat="server" />
             <asp:ListView ID="ContactListView" runat="server" ItemType="Aventyrliga.Model.Contact" SelectMethod="ContactListView_GetData"
@@ -33,7 +43,7 @@
                         <%-- Platshållare för nya rader --%>
                         <asp:PlaceHolder ID="itemPlaceholder" runat="server" />
                     </table>
-                    <asp:DataPager ID="DataPager" runat="server" >
+                    <asp:DataPager ID="DataPager" runat="server" PageSize="20">
                         <Fields>
                             <asp:NextPreviousPagerField ShowFirstPageButton="True" FirstPageText=" << "
                                 ShowNextPageButton="False" ShowPreviousPageButton="False" />
@@ -57,7 +67,7 @@
                         </td>
                         <td>
                             <%-- "Commandknappar" --%>
-                            <asp:LinkButton runat="server" CommandName="Delete" Text="Ta bort" CausesValidation="false" 
+                            <asp:LinkButton runat="server" CommandName="Delete" Text="Ta bort" CausesValidation="false"
                                 OnClientClick='<%# String.Format("return confirm(\"Är du säker att du vill ta bort {0} {1} {2}?\")", Item.FirstName, Item.LastName, Item.EmailAddress) %>' />
                             <asp:LinkButton runat="server" CommandName="Edit" Text="Redigera" CausesValidation="false" />
                         </td>
@@ -76,37 +86,52 @@
                     <%-- Mall för rad i tabellen för att lägga till nya kunduppgifter.--%>
                     <tr>
                         <td>
-                            <asp:TextBox ID="Name" runat="server" MaxLength="50" Text='<%# BindItem.FirstName %>' />
+                            <asp:TextBox ID="FirstName" runat="server" MaxLength="50" Text='<%# BindItem.FirstName %>' />
                         </td>
                         <td>
-                            <asp:TextBox ID="Address" runat="server" MaxLength="50" Text='<%# BindItem.LastName %>' />
+                            <asp:TextBox ID="LastName" runat="server" MaxLength="50" Text='<%# BindItem.LastName %>' />
                         </td>
                         <td>
-                            <asp:TextBox ID="PostalCode" runat="server" MaxLength="50" Text='<%# BindItem.EmailAddress %>' />
+                            <asp:TextBox ID="Emailaddress" runat="server" MaxLength="50" Text='<%# BindItem.EmailAddress %>' />
                         </td>
                         <td>
                             <%-- "Commandknappar" --%>
                             <asp:LinkButton runat="server" CommandName="Insert" Text="Lägg till" />
                             <asp:LinkButton runat="server" CommandName="Cancel" Text="Rensa" CausesValidation="false" />
                         </td>
+                        <asp:RequiredFieldValidator runat="server" ErrorMessage="Ett förnamn måste anges" ControlToValidate="FirstName" CssClass="error" Display="Dynamic" ValidationGroup="ValidationSummary"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator runat="server" ErrorMessage="Ett efternamn måste anges" ControlToValidate="LastName" CssClass="error" Display="Dynamic" ValidationGroup="ValidationSummary"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator runat="server" ErrorMessage="En emailadress måste anges" ControlToValidate="Emailaddress" CssClass="error" Display="Dynamic" ValidationGroup="ValidationSummary"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator runat="server" ErrorMessage="Emailadressen verkar inte vara giltig" ControlToValidate="Emailaddress" CssClass="error" Display="Static" ValidationGroup="ValidationSummary"
+                            ValidationExpression="^(?(&quot;&quot;)(&quot;&quot;.+?&quot;&quot;@)|(([0-9a-zA-Z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-zA-Z])@))(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,6}))$">
+                            <%-- http://msdn.microsoft.com/en-us/library/ff650303.aspx --%>
+                        </asp:RegularExpressionValidator>
                     </tr>
                 </InsertItemTemplate>
                 <EditItemTemplate>
                     <%-- Redigera. --%>
                     <tr>
                         <td>
-                            <asp:TextBox ID="Name" runat="server" Text='<%# BindItem.FirstName %>' />
+                            <asp:TextBox ID="FirstName" runat="server" MaxLength="50" Text='<%# BindItem.FirstName %>' />
                         </td>
                         <td>
-                            <asp:TextBox ID="Address" runat="server" Text='<%# BindItem.LastName %>' />
+                            <asp:TextBox ID="LastName" runat="server" MaxLength="50" Text='<%# BindItem.LastName %>' />
                         </td>
                         <td>
-                            <asp:TextBox ID="PostalCode" runat="server" Text='<%# BindItem.EmailAddress %>' />
+                            <asp:TextBox ID="Emailaddress" runat="server" MaxLength="50" Text='<%# BindItem.EmailAddress %>' />
                         </td>
                         <td>
                             <%-- "Commandknappar" --%>
                             <asp:LinkButton runat="server" CommandName="Update" Text="Spara" />
                             <asp:LinkButton runat="server" CommandName="Cancel" Text="Avbryt" CausesValidation="false" />
+
+                            <asp:RequiredFieldValidator runat="server" ErrorMessage="Ett förnamn måste anges" ControlToValidate="FirstName" CssClass="error" Display="Dynamic" ValidationGroup="ValidationSummary"></asp:RequiredFieldValidator>
+                            <asp:RequiredFieldValidator runat="server" ErrorMessage="Ett efternamn måste anges" ControlToValidate="LastName" CssClass="error" Display="Dynamic" ValidationGroup="ValidationSummary"></asp:RequiredFieldValidator>
+                            <asp:RequiredFieldValidator runat="server" ErrorMessage="En emailadress måste anges" ControlToValidate="Emailaddress" CssClass="error" Display="Dynamic" ValidationGroup="ValidationSummary"></asp:RequiredFieldValidator>
+                            <asp:RegularExpressionValidator runat="server" ErrorMessage="Emailadressen verkar inte vara giltig" ControlToValidate="Emailaddress" CssClass="error" Display="Static" ValidationGroup="ValidationSummary"
+                                ValidationExpression="^(?(&quot;&quot;)(&quot;&quot;.+?&quot;&quot;@)|(([0-9a-zA-Z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-zA-Z])@))(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,6}))$">
+                            <%-- http://msdn.microsoft.com/en-us/library/ff650303.aspx --%>
+                            </asp:RegularExpressionValidator>
                         </td>
                     </tr>
                 </EditItemTemplate>

@@ -16,6 +16,7 @@ div {
 table {
     font-size: 15px;
     line-height: 22px;
+    width:100%;
 }
 table tr:nth-child(odd) {background: #CCC}
 h1 {

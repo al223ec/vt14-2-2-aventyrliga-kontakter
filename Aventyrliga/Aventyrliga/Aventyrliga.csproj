@@ -59,12 +59,15 @@
   <ItemGroup>
     <Content Include="Content\style.css" />
     <Content Include="Default.aspx" />
+    <Content Include="Error.html" />
+    <Content Include="Global.asax" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Extensions\ValidationExtensions.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -72,9 +75,13 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\DAL\ContactDAL.cs" />
     <Compile Include="Model\DAL\DALBase.cs" />
+    <Compile Include="Model\ErrorSuccessHandler.cs" />
     <Compile Include="Model\Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

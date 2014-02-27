@@ -26,7 +26,7 @@ namespace Aventyrliga.Model
 
         public int CompareTo(Contact other)
         {
-            return other.LastName.CompareTo(LastName);
+            return other.LastName.CompareTo(LastName) * -1;
         }
     }
 }

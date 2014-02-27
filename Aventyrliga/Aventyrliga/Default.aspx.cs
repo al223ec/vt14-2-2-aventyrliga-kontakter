@@ -1,6 +1,7 @@
 ﻿using Aventyrliga.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -14,14 +15,24 @@ namespace Aventyrliga
         private Service Service { get { return _service ?? (_service = new Service()); } }
 
         protected void Page_Load(object sender, EventArgs e)
-
         {
-            if (Session["Success"] != null)
+            if (Session["UploadSuccessfull"] != null)
             {
-                Session.Remove("Success");
-                Response.Redirect("//"); 
+                OutputPanel.Visible = true;
+                HeaderOutputLiteral.Text = "Posten postades";
+                OutputLiteral.Text = "Posten laddades upp, much success";
+                Session.Remove("UploadSuccessfull");
+            }
+
+            if (Session["UpdateSuccessfull"] != null)
+            {
+                OutputPanel.Visible = true;
+                HeaderOutputLiteral.Text = "Posten uppdaterades";
+                OutputLiteral.Text = "Posten uppdaterades, much success";
+                Session.Remove("UpdateSuccessfull");
             }
         }
+
         // The return type can be changed to IEnumerable, however to support
         // paging and sorting, the following parameters must be added:
         //     int maximumRows
@@ -30,39 +41,76 @@ namespace Aventyrliga
         //     string sortByExpression
         public IEnumerable<Contact> ContactListView_GetData(int maximumRows, int startRowIndex, out int totalRowCount)
         {
-              return Service.GetContactsPageWise(maximumRows, startRowIndex, out totalRowCount);
+            try
+            {
+                return Service.GetContactsPageWise(maximumRows, startRowIndex, out totalRowCount);
+            }
+            catch (Exception)
+            {
+                throw new ApplicationException("Felet är väldigt fel, vg åtgärda felet som är fel!");
+            }
         }
 
         public void ContactListView_InsertItem(Contact contact)
         {
-            if (ModelState.IsValid)
+            try
             {
-                //updateModel(contact)?? 
-                Service.SaveContact(contact);
-                Session["Success"] = true; 
+                if (ModelState.IsValid)
+                {
+                    Service.SaveContact(contact);
+                    Session["UploadSuccessfull"] = true;
+                    Response.RedirectToRoute("Start");
+                }
+            }
+            catch (Exception e)
+            {
+                var validationResults = e.Data["ValidationResults"] as ICollection<ValidationResult>;
+                if (validationResults != null)
+                {
+                    foreach (var item in validationResults)
+                    {
+                        ModelState.AddModelError(String.Empty, item.ErrorMessage);
+                    }
+                }
+                ModelState.AddModelError(String.Empty, "Ett fel inträffade då posten skulle läggas till i tabellen.");
             }
         }
 
-        // The id parameter name should match the DataKeyNames value set on the control
         public void ContactListView_UpdateItem(Contact contact)
         {
-            if (contact == null)
+            try
             {
-                // The item wasn't found
-                ModelState.AddModelError("", String.Format("Item with id {0} was not found", contact.ContactID));
-                return;
+                if (ModelState.IsValid)
+                {
+                    Service.SaveContact(contact);
+                    Session["UpdateSuccessfull"] = true;
+                    Response.RedirectToRoute("Start"); //Förstör paginering
+                }
             }
-            if (TryUpdateModel(contact) && ModelState.IsValid)
+            catch (Exception e)
             {
-                Service.SaveContact(contact);
-                
+                var validationResults = e.Data["ValidationResults"] as ICollection<ValidationResult>;
+                if (validationResults != null)
+                {
+                    foreach (var item in validationResults)
+                    {
+                        ModelState.AddModelError(String.Empty, item.ErrorMessage);
+                    }
+                }
+                ModelState.AddModelError(String.Empty, "Ett fel inträffade då tabellen skulle uppdateras.");
             }
         }
 
-        // The id parameter name should match the DataKeyNames value set on the control
         public void ContactListView_DeleteItem(int contactID)
         {
-            Service.DeleteContact(contactID);
+            try
+            {
+                Service.DeleteContact(contactID);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(String.Empty, "Ett fel inträffade då posten skulle tas bort.");
+            }
         }
     }
 }
